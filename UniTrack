@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>UniTrack — Campus Resolution Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet"/>
+<style>
+/* ── RESET & TOKENS ── */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  /* Login palette */
+  --indigo:#4F46E5;--indigo-dark:#3730A3;--indigo-deep:#312E81;
+  --indigo-light:#EEF2FF;--indigo-mid:#C7D2FE;
+  --teal:#0D9488;--teal-light:#CCFBF1;
+  --slate-900:#0F172A;--slate-800:#1E293B;--slate-700:#334155;--slate-600:#475569;
+  --slate-400:#94A3B8;--slate-200:#E2E8F0;--slate-100:#F1F5F9;--slate-50:#F8FAFC;
+  --white:#fff;
+  --radius-sm:8px;--radius-md:12px;--radius-lg:18px;--radius-xl:24px;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 16px rgba(79,70,229,.10),0 1px 4px rgba(0,0,0,.06);
+  --shadow-lg:0 12px 40px rgba(79,70,229,.15),0 2px 8px rgba(0,0,0,.08);
+  --font-display:'Playfair Display',Georgia,serif;
+  --font-ui:'DM Sans',system-ui,sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+
+  /* Platform palette */
+  --p:#7F77DD;--p-light:#EEEDFE;--p-dark:#3C3489;--p-text:#26215C;
+  --t:#1D9E75;--t-light:#E1F5EE;--t-dark:#085041;
+  --coral:#D85A30;--amber:#BA7517;--amber-light:#FAEEDA;
+  --red:#E24B4A;--red-light:#FCEBEB;
+  --green:#639922;--green-light:#EAF3DE;--green-text:#27500A;
+  --pink:#D4537E;
+
+  /* Shared */
+  --color-background-primary:#ffffff;
+  --color-background-tertiary:#F4F3FD;
+  --color-text-primary:#1E1B3A;
+  --color-text-secondary:#6B6892;
+  --font-sans:'DM Sans',system-ui,sans-serif;
+}
+html,body{height:100%;font-family:var(--font-ui);background:var(--color-background-tertiary);color:var(--slate-800)}
+
+/* ═══════════════════════════════════
+   LOGIN PAGE
+═══════════════════════════════════ */
+.login-page{display:grid;grid-template-columns:1fr 1fr;min-height:100vh}
+@media(max-width:860px){.login-page{grid-template-columns:1fr}}
+
+/* Left panel */
+.lp-left{
+  background:var(--indigo-deep);
+  position:relative;overflow:hidden;
+  display:flex;flex-direction:column;justify-content:space-between;
+  padding:48px 52px;
+}
+@media(max-width:860px){.lp-left{display:none}}
+
+.geo{position:absolute;border-radius:50%;opacity:.12}
+.geo-1{width:360px;height:360px;background:#818CF8;top:-80px;right:-100px}
+.geo-2{width:220px;height:220px;background:#A5B4FC;bottom:120px;right:80px}
+.geo-3{width:140px;height:140px;background:#C7D2FE;bottom:-40px;left:60px}
+.geo-line{position:absolute;width:1px;height:100%;background:linear-gradient(180deg,transparent 0%,rgba(165,180,252,.4) 40%,rgba(165,180,252,.4) 60%,transparent 100%);left:38%}
+
+.left-brand{display:flex;align-items:center;gap:12px;z-index:1;position:relative}
+.brand-mark{
+  width:42px;height:42px;border-radius:var(--radius-sm);
+  background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.25);
+  display:flex;align-items:center;justify-content:center;
+}
+.brand-name{font-family:var(--font-display);font-size:22px;color:#fff;letter-spacing:.3px}
+.brand-tagline{font-size:12px;color:#A5B4FC;margin-top:1px}
+
+.left-body{z-index:1;position:relative;flex:1;display:flex;flex-direction:column;justify-content:center;padding:40px 0}
+.left-headline{font-family:var(--font-display);font-size:38px;line-height:1.2;color:#fff;margin-bottom:18px}
+.left-headline span{color:#A5B4FC}
+.left-sub{font-size:15px;color:#C7D2FE;line-height:1.65;max-width:340px;margin-bottom:40px}
+
+.illustration{
+  width:100%;max-width:320px;border-radius:var(--radius-lg);
+  background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.12);
+  padding:28px;display:flex;flex-direction:column;gap:12px;
+}
+.ill-bar{height:8px;border-radius:4px;background:rgba(255,255,255,.15)}
+.ill-bar.w60{width:60%}.ill-bar.w80{width:80%}.ill-bar.w45{width:45%}
+.ill-row{display:flex;gap:10px;align-items:center}
+.ill-dot{width:28px;height:28px;border-radius:50%;flex-shrink:0}
+.ill-dot.purple{background:rgba(165,180,252,.5)}
+.ill-dot.teal{background:rgba(94,234,212,.4)}
+.ill-dot.amber{background:rgba(252,211,77,.4)}
+.ill-lines{flex:1;display:flex;flex-direction:column;gap:5px}
+.ill-line{height:6px;border-radius:3px;background:rgba(255,255,255,.12)}
+.ill-line.sh{width:60%}
+
+.trust-list{z-index:1;position:relative;display:flex;flex-direction:column;gap:10px}
+.trust-item{display:flex;align-items:center;gap:10px;font-size:13px;color:#C7D2FE}
+.trust-icon{
+  width:26px;height:26px;border-radius:6px;
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;
+}
+
+/* Right panel */
+.lp-right{
+  display:flex;align-items:center;justify-content:center;
+  padding:40px 32px;background:var(--white);
+}
+@media(max-width:860px){
+  .lp-right{background:var(--indigo-deep);align-items:flex-start;padding:32px 20px}
+}
+
+.login-card{
+  width:100%;max-width:440px;background:var(--white);
+  border-radius:var(--radius-xl);box-shadow:var(--shadow-lg);
+  padding:40px 36px;
+  animation:slideUp .5s cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:860px){.login-card{padding:28px 24px}}
+
+.card-top{margin-bottom:28px}
+.card-logo{display:none;align-items:center;gap:10px;margin-bottom:20px}
+@media(max-width:860px){.card-logo{display:flex}}
+.card-logo .brand-mark{background:var(--indigo);border-color:var(--indigo-dark)}
+.card-logo .brand-name{color:var(--slate-800)}
+.card-logo .brand-tagline{color:var(--slate-400)}
+.card-title{font-family:var(--font-display);font-size:26px;color:var(--slate-900);margin-bottom:6px}
+.card-sub{font-size:14px;color:var(--slate-400);line-height:1.5}
+
+/* Role tabs */
+.role-label{font-size:12px;font-weight:600;color:var(--slate-600);letter-spacing:.6px;text-transform:uppercase;margin-bottom:10px}
+.role-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:24px}
+.role-tab{
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  padding:10px 6px;border-radius:var(--radius-md);
+  border:1.5px solid var(--slate-200);background:var(--white);
+  cursor:pointer;transition:all .18s;
+}
+.role-tab:hover{border-color:var(--indigo-mid);background:var(--indigo-light)}
+.role-tab.active{border-color:var(--indigo);background:var(--indigo-light)}
+.role-tab .rt-icon{font-size:18px;line-height:1}
+.role-tab .rt-label{font-size:11px;font-weight:500;color:var(--slate-600);transition:color .18s}
+.role-tab.active .rt-label{color:var(--indigo-dark);font-weight:600}
+
+/* Form fields */
+.field{margin-bottom:18px}
+.field-label{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:13px;font-weight:500;color:var(--slate-700);margin-bottom:7px;
+}
+.field-label a{font-size:12px;color:var(--indigo);text-decoration:none;font-weight:400}
+.field-label a:hover{text-decoration:underline}
+.field-wrap{position:relative}
+.field-icon{
+  position:absolute;left:13px;top:50%;transform:translateY(-50%);
+  font-size:15px;pointer-events:none;opacity:.5;
+}
+.field-input{
+  width:100%;height:46px;padding:0 14px 0 40px;
+  border:1.5px solid var(--slate-200);border-radius:var(--radius-md);
+  font-family:var(--font-ui);font-size:15px;color:var(--slate-900);
+  background:var(--slate-50);outline:none;
+  transition:border-color .18s,box-shadow .18s,background .18s;
+}
+.field-input:focus{border-color:var(--indigo);background:var(--white);box-shadow:0 0 0 3px rgba(79,70,229,.12)}
+.field-input::placeholder{color:var(--slate-400)}
+.pass-toggle{
+  position:absolute;right:13px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;
+  font-size:15px;color:var(--slate-400);padding:4px;transition:color .15s;
+}
+.pass-toggle:hover{color:var(--indigo)}
+
+.remember-row{display:flex;align-items:center;gap:8px;margin-bottom:22px}
+.remember-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--indigo);cursor:pointer}
+.remember-row label{font-size:13px;color:var(--slate-600);cursor:pointer}
+
+.cta-btn{
+  width:100%;height:50px;background:var(--indigo);color:#fff;
+  font-family:var(--font-ui);font-size:15px;font-weight:600;
+  border:none;border-radius:var(--radius-md);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:background .18s,transform .12s,box-shadow .18s;
+  box-shadow:0 2px 8px rgba(79,70,229,.3);position:relative;overflow:hidden;
+}
+.cta-btn::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.12) 0%,transparent 60%)}
+.cta-btn:hover{background:var(--indigo-dark);box-shadow:0 4px 16px rgba(79,70,229,.4);transform:translateY(-1px)}
+.cta-btn:active{transform:translateY(0)}
+.btn-arrow{font-size:16px;transition:transform .18s}
+.cta-btn:hover .btn-arrow{transform:translateX(3px)}
+
+.l-divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--slate-400);font-size:12px}
+.l-divider::before,.l-divider::after{content:'';flex:1;height:1px;background:var(--slate-200)}
+
+.sso-btn{
+  width:100%;height:44px;background:var(--white);color:var(--slate-800);
+  font-family:var(--font-ui);font-size:14px;font-weight:500;
+  border:1.5px solid var(--slate-200);border-radius:var(--radius-md);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:border-color .18s,background .18s;
+}
+.sso-btn:hover{border-color:var(--slate-400);background:var(--slate-50)}
+.sso-icon{width:20px;height:20px;border-radius:4px;background:var(--indigo-light);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--indigo)}
+
+.privacy-note{
+  margin-top:20px;padding:14px 16px;background:var(--indigo-light);
+  border-radius:var(--radius-md);border-left:3px solid var(--indigo);
+  font-size:12px;color:var(--indigo-dark);line-height:1.55;
+}
+.privacy-note strong{font-weight:600}
+
+.status-strip{display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;color:var(--slate-400);margin-top:20px;text-align:center}
+.status-dot{width:7px;height:7px;border-radius:50%;background:#22C55E;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ═══════════════════════════════════
+   PLATFORM (post-login)
+═══════════════════════════════════ */
+input,select,textarea{
+  font-family:var(--font-sans);font-size:14px;color:var(--color-text-primary);
+  background:var(--color-background-primary);border:1.5px solid #CECBF6;
+  border-radius:10px;padding:9px 13px;width:100%;outline:none;transition:border-color .2s;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--p);box-shadow:0 0 0 3px #EEEDFE}
+textarea{resize:vertical}
+.btn{
+  font-family:var(--font-sans);font-size:14px;cursor:pointer;border-radius:10px;
+  border:1.5px solid #CECBF6;background:var(--color-background-primary);
+  color:var(--color-text-primary);padding:9px 18px;transition:all .15s;font-weight:500;
+}
+.btn:hover{background:#EEEDFE;border-color:var(--p);color:var(--p-dark)}
+.btn.primary{background:var(--p);color:#fff;border-color:var(--p)}
+.btn.primary:hover{background:var(--p-dark);border-color:var(--p-dark)}
+.btn.teal{background:var(--t);color:#fff;border-color:var(--t)}
+.btn.teal:hover{background:var(--t-dark)}
+.btn.sm{font-size:12px;padding:5px 12px}
+
+.badge{display:inline-block;font-size:11px;font-weight:500;padding:3px 9px;border-radius:20px;letter-spacing:.2px}
+.b-open{background:#EEEDFE;color:#3C3489}
+.b-prog{background:#FAEEDA;color:#633806}
+.b-res{background:#EAF3DE;color:#27500A}
+.b-high{background:#FCEBEB;color:#791F1F}
+.b-med{background:#FAEEDA;color:#633806}
+.b-low{background:#EAF3DE;color:#27500A}
+
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:56px;background:var(--p);color:#fff}
+.topbar-brand{display:flex;align-items:center;gap:10px}
+.brand-icon{width:30px;height:30px;border-radius:8px;background:#fff;display:flex;align-items:center;justify-content:center}
+.topbar-brand-name{font-size:16px;font-weight:500;color:#fff;letter-spacing:.3px}
+.topbar-brand-tagline{font-size:11px;color:#CECBF6;margin-top:1px}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.avatar{width:34px;height:34px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:var(--p-dark);flex-shrink:0}
+.nav-pill{font-size:13px;font-weight:500;padding:6px 14px;border-radius:20px;background:transparent;color:#EEEDFE;border:1.5px solid rgba(255,255,255,.3);cursor:pointer;transition:all .15s}
+.nav-pill:hover,.nav-pill.active{background:#fff;color:var(--p-dark);border-color:#fff}
+
+.page{display:none;padding:24px;max-width:960px;margin:0 auto}
+.page.active{display:block}
+
+.section-label{font-size:12px;font-weight:500;color:var(--p);letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px}
+.card{background:var(--color-background-primary);border-radius:16px;border:1.5px solid #EEEDFE;padding:20px}
+.card.accent-purple{border-top:4px solid var(--p)}
+.card.accent-teal{border-top:4px solid var(--t)}
+.metric-tile{border-radius:14px;padding:16px 18px;color:#fff;position:relative;overflow:hidden}
+.metric-tile .m-label{font-size:12px;opacity:.85;margin-bottom:6px}
+.metric-tile .m-val{font-size:28px;font-weight:500}
+.metric-tile .m-icon{position:absolute;right:14px;top:14px;font-size:22px;opacity:.35}
+.mt-purple{background:var(--p)}.mt-teal{background:var(--t)}.mt-coral{background:var(--coral)}.mt-red{background:var(--red)}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.pf-field{margin-bottom:14px}
+.pf-field label{display:block;font-size:13px;font-weight:500;color:var(--p-dark);margin-bottom:5px}
+
+.issue-row{display:flex;align-items:center;gap:10px;padding:13px 14px;border-radius:12px;cursor:pointer;transition:background .15s;font-size:14px}
+.issue-row:hover{background:#EEEDFE}
+.issue-id{font-size:11px;font-weight:500;color:var(--p);background:#EEEDFE;padding:2px 7px;border-radius:6px;min-width:52px;text-align:center}
+.issue-title{flex:1;color:var(--color-text-primary);font-weight:500}
+.issue-cat{font-size:11px;color:var(--color-text-secondary);min-width:90px}
+.issue-assign{font-size:12px;color:var(--t-dark);min-width:90px}
+
+.tab-bar{display:flex;gap:6px;margin-bottom:18px}
+.tab{font-size:13px;padding:7px 16px;cursor:pointer;border-radius:20px;border:1.5px solid #EEEDFE;background:transparent;color:var(--color-text-secondary);font-weight:500;transition:all .15s}
+.tab.active{background:var(--p);color:#fff;border-color:var(--p)}
+
+.notif-item{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-radius:12px;margin-bottom:8px;border:1.5px solid #EEEDFE;background:var(--color-background-primary)}
+.notif-item.unread{border-color:#CECBF6;background:#EEEDFE}
+.notif-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.nd-unread{background:var(--p)}.nd-read{background:#D3D1C7}
+
+.pf-divider{height:1px;background:#EEEDFE;margin:12px 0}
+.toast{display:none;padding:11px 18px;background:var(--p);color:#fff;border-radius:10px;font-size:13px;font-weight:500;margin-bottom:16px;position:fixed;top:70px;left:50%;transform:translateX(-50%);z-index:999;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.15)}
+
+.hero-strip{background:var(--p);border-radius:16px;padding:20px 24px;color:#fff;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between}
+.hero-strip .hs-title{font-size:17px;font-weight:500}
+.hero-strip .hs-sub{font-size:13px;color:#CECBF6;margin-top:3px}
+
+.cat-chip{display:inline-block;font-size:12px;padding:4px 10px;border-radius:20px;font-weight:500;cursor:pointer;border:1.5px solid transparent;transition:all .15s}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ TOAST ══════════════════ -->
+<div id="toast" class="toast"></div>
+
+<!-- ══════════════════ TOPBAR (hidden until login) ══════════════════ -->
+<div id="topbar" class="topbar" style="display:none">
+  <div class="topbar-brand">
+    <div class="brand-icon">
+      <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg" width="18" height="18">
+        <rect x="2" y="8" width="14" height="8" rx="2" fill="#7F77DD"/>
+        <path d="M9 2L16 7H2L9 2Z" fill="#534AB7"/>
+        <rect x="7" y="10" width="4" height="6" rx="1" fill="white"/>
+      </svg>
+    </div>
+    <div>
+      <div class="topbar-brand-name">UniTrack</div>
+      <div class="topbar-brand-tagline" id="tb-role-label">University Portal</div>
+    </div>
+  </div>
+  <div class="topbar-right" id="tb-nav"></div>
+</div>
+
+<!-- ══════════════════ LOGIN PAGE ══════════════════ -->
+<div id="page-login" class="page active" style="padding:0;max-width:none">
+  <div class="login-page">
+
+    <!-- LEFT PANEL -->
+    <div class="lp-left">
+      <div class="geo geo-1"></div>
+      <div class="geo geo-2"></div>
+      <div class="geo geo-3"></div>
+      <div class="geo-line"></div>
+
+      <div class="left-brand">
+        <div class="brand-mark">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <rect x="3" y="10" width="16" height="10" rx="2.5" fill="rgba(255,255,255,.6)"/>
+            <path d="M11 2L19 8.5H3L11 2Z" fill="white"/>
+            <rect x="8.5" y="12.5" width="5" height="7.5" rx="1.5" fill="rgba(79,70,229,.8)"/>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-name">UniTrack</div>
+          <div class="brand-tagline">Campus Resolution Portal</div>
+        </div>
+      </div>
+
+      <div class="left-body">
+        <div class="left-headline">
+          Your voice<br/><span>shapes the</span><br/>campus.
+        </div>
+        <div class="left-sub">
+          Report issues, track resolutions, and hold your institution accountable — safely and transparently.
+        </div>
+        <div class="illustration">
+          <div class="ill-bar w80"></div>
+          <div class="ill-bar w60"></div>
+          <div style="height:14px"></div>
+          <div class="ill-row">
+            <div class="ill-dot purple"></div>
+            <div class="ill-lines"><div class="ill-line"></div><div class="ill-line sh"></div></div>
+          </div>
+          <div class="ill-row">
+            <div class="ill-dot teal"></div>
+            <div class="ill-lines"><div class="ill-line"></div><div class="ill-line sh"></div></div>
+          </div>
+          <div class="ill-row">
+            <div class="ill-dot amber"></div>
+            <div class="ill-lines"><div class="ill-line"></div><div class="ill-line sh"></div></div>
+          </div>
+          <div style="height:6px"></div>
+          <div class="ill-bar w45"></div>
+        </div>
+      </div>
+
+      <div class="trust-list">
+        <div class="trust-item"><div class="trust-icon">🔒</div>Your identity is protected — reports are confidential</div>
+        <div class="trust-item"><div class="trust-icon">✓</div>Average resolution time: 4.2 working days</div>
+        <div class="trust-item"><div class="trust-icon">📋</div>1,240+ issues resolved this semester</div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="lp-right">
+      <div class="login-card">
+
+        <!-- Mobile logo -->
+        <div class="card-logo">
+          <div class="brand-mark" style="background:var(--indigo);border-color:var(--indigo-dark)">
+            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+              <rect x="3" y="10" width="16" height="10" rx="2.5" fill="rgba(255,255,255,.7)"/>
+              <path d="M11 2L19 8.5H3L11 2Z" fill="white"/>
+              <rect x="8.5" y="12.5" width="5" height="7.5" rx="1.5" fill="rgba(79,70,229,.9)"/>
+            </svg>
+          </div>
+          <div>
+            <div class="brand-name" style="color:var(--slate-800)">UniTrack</div>
+            <div class="brand-tagline" style="color:var(--slate-400)">Campus Resolution Portal</div>
+          </div>
+        </div>
+
+        <div class="card-top">
+          <div class="card-title">Welcome back</div>
+          <div class="card-sub">Sign in to report an issue or check your complaint status.</div>
+        </div>
+
+        <!-- Role selector -->
+        <div class="role-label">Sign in as</div>
+        <div class="role-tabs">
+          <button class="role-tab active" onclick="setRole(this,'student')" type="button">
+            <span class="rt-icon">🎓</span><span class="rt-label">Student</span>
+          </button>
+          <button class="role-tab" onclick="setRole(this,'faculty')" type="button">
+            <span class="rt-icon">📚</span><span class="rt-label">Faculty</span>
+          </button>
+          <button class="role-tab" onclick="setRole(this,'staff')" type="button">
+            <span class="rt-icon">🏢</span><span class="rt-label">Staff</span>
+          </button>
+          <button class="role-tab" onclick="setRole(this,'admin')" type="button">
+            <span class="rt-icon">⚙️</span><span class="rt-label">Admin</span>
+          </button>
+        </div>
+
+        <!-- Email -->
+        <div class="field">
+          <div class="field-label">University email</div>
+          <div class="field-wrap">
+            <span class="field-icon">✉</span>
+            <input class="field-input" type="email" id="l-email" placeholder="studentid@university.edu" autocomplete="email" value="priya@university.edu"/>
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="field">
+          <div class="field-label">
+            Password
+            <a href="#">Forgot password?</a>
+          </div>
+          <div class="field-wrap">
+            <span class="field-icon">🔑</span>
+            <input class="field-input" type="password" id="l-pass" placeholder="Enter your password" autocomplete="current-password" value="password"/>
+            <button class="pass-toggle" type="button" onclick="togglePass()" id="pass-toggle" title="Show password">👁</button>
+          </div>
+        </div>
+
+        <!-- Remember me -->
+        <div class="remember-row">
+          <input type="checkbox" id="remember" checked/>
+          <label for="remember">Keep me signed in for 30 days</label>
+        </div>
+
+        <!-- Sign in -->
+        <button class="cta-btn" type="button" onclick="doLogin()" id="login-btn">
+          Sign in
+          <span class="btn-arrow">→</span>
+        </button>
+
+        <!-- SSO -->
+        <div class="l-divider">or continue with</div>
+        <button class="sso-btn" type="button">
+          <div class="sso-icon">G</div>
+          Sign in with university SSO
+        </button>
+
+        <!-- Privacy -->
+        <div class="privacy-note">
+          <strong>Your privacy is protected.</strong> Complaints are handled confidentially. Your identity will not be disclosed to the subject of a complaint without your consent and in accordance with university policy.
+        </div>
+
+        <!-- Status -->
+        <div class="status-strip">
+          <span class="status-dot"></span>
+          All systems operational &nbsp;·&nbsp; Need help? <a href="#" style="color:var(--indigo);text-decoration:none;margin-left:4px">Contact support</a>
+        </div>
+        <div style="text-align:center;font-size:12px;color:var(--slate-400);margin-top:10px">Demo mode — select any role and sign in</div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ HOME PAGE ══════════════════ -->
+<div class="page" id="page-home">
+  <div class="hero-strip">
+    <div>
+      <div class="hs-title" id="hero-greeting">Good day!</div>
+      <div class="hs-sub">Here's a snapshot of your campus activity today</div>
+    </div>
+    <button class="btn" style="background:#fff;color:var(--p-dark);border-color:#fff;font-weight:500" onclick="showTab('report')">+ New complaint</button>
+  </div>
+  <div class="grid4" style="margin-bottom:20px" id="home-metrics"></div>
+  <div class="section-label">Recent activity</div>
+  <div class="card" id="home-recent"></div>
+</div>
+
+<!-- ══════════════════ REPORT PAGE ══════════════════ -->
+<div class="page" id="page-report">
+  <div class="section-label">Submit a complaint</div>
+  <div class="card accent-purple">
+    <div style="margin-bottom:16px">
+      <div style="font-size:15px;font-weight:500;color:#26215C;margin-bottom:4px">What's the issue?</div>
+      <div style="font-size:13px;color:#534AB7">Choose a category to get started</div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px" id="cat-chips"></div>
+    <div class="pf-field"><label>Issue title</label><input id="r-title" placeholder="Brief summary of the problem"/></div>
+    <div class="pf-field"><label>Description</label><textarea id="r-desc" rows="3" placeholder="What happened, when, and how it affects you..."></textarea></div>
+    <div class="grid2">
+      <div class="pf-field" style="margin-bottom:0"><label>Location / building</label><input id="r-loc" placeholder="e.g. Block C, Room 204"/></div>
+      <div class="pf-field" style="margin-bottom:0"><label>Priority</label><select id="r-pri"><option>Low</option><option selected>Medium</option><option>High</option></select></div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px">
+      <button class="btn" onclick="showTab('home')">Cancel</button>
+      <button class="btn primary" onclick="submitComplaint()">Submit complaint</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ MY ISSUES PAGE ══════════════════ -->
+<div class="page" id="page-myissues">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+    <div>
+      <div class="section-label" style="margin-bottom:2px">My complaints</div>
+      <div style="font-size:13px;color:var(--color-text-secondary)" id="my-count"></div>
+    </div>
+    <button class="btn teal" onclick="showTab('report')">+ New complaint</button>
+  </div>
+  <div class="card" id="my-list"></div>
+</div>
+
+<!-- ══════════════════ NOTIFICATIONS PAGE ══════════════════ -->
+<div class="page" id="page-notifications">
+  <div class="section-label">Notifications</div>
+  <div id="notif-list"></div>
+</div>
+
+<!-- ══════════════════ ADMIN PAGE ══════════════════ -->
+<div class="page" id="page-admin">
+  <div class="hero-strip" style="background:#534AB7">
+    <div>
+      <div class="hs-title">Admin dashboard</div>
+      <div class="hs-sub">Monitor, assign, and resolve campus issues</div>
+    </div>
+  </div>
+  <div class="grid4" style="margin-bottom:20px" id="admin-metrics"></div>
+  <div class="tab-bar">
+    <div class="tab active" onclick="aFilter('all',this)">All issues</div>
+    <div class="tab" onclick="aFilter('open',this)">Open</div>
+    <div class="tab" onclick="aFilter('In progress',this)">In progress</div>
+    <div class="tab" onclick="aFilter('Resolved',this)">Resolved</div>
+  </div>
+  <div class="card" id="admin-list"></div>
+</div>
+
+<!-- ══════════════════ DETAIL PAGE ══════════════════ -->
+<div class="page" id="page-detail">
+  <button class="btn sm" style="margin-bottom:16px" onclick="goBack()">← Back</button>
+  <div id="detail-body"></div>
+</div>
+
+<!-- ══════════════════ SCRIPTS ══════════════════ -->
+<script>
+/* ── Login UI helpers ── */
+let selectedRole = 'student';
+
+function setRole(el, role) {
+  selectedRole = role;
+  document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  const placeholders = {
+    student: 'studentid@university.edu',
+    faculty: 'faculty@university.edu',
+    staff: 'staff@university.edu',
+    admin: 'admin@university.edu'
+  };
+  document.getElementById('l-email').placeholder = placeholders[role] || 'you@university.edu';
+}
+
+function togglePass() {
+  const f = document.getElementById('l-pass');
+  const b = document.getElementById('pass-toggle');
+  if (f.type === 'password') { f.type = 'text'; b.textContent = '🙈'; }
+  else { f.type = 'password'; b.textContent = '👁'; }
+}
+
+/* ── Platform data ── */
+const cats = [
+  {label:'Infrastructure',color:'#534AB7',bg:'#EEEDFE'},
+  {label:'IT & technology',color:'#085041',bg:'#E1F5EE'},
+  {label:'Academic services',color:'#712B13',bg:'#FAECE7'},
+  {label:'Hostel & housing',color:'#72243E',bg:'#FBEAF0'},
+  {label:'Safety & security',color:'#791F1F',bg:'#FCEBEB'},
+  {label:'Cleanliness',color:'#633806',bg:'#FAEEDA'},
+  {label:'Other',color:'#444441',bg:'#F1EFE8'},
+];
+let selCat = cats[0].label;
+
+const seed = [
+  {id:'#1042',title:'Broken AC in Block C lab',cat:'Infrastructure',loc:'Block C, Room 204',desc:'The air conditioning unit has been non-functional for two weeks, severely affecting afternoon sessions.',status:'open',priority:'High',reporter:'Priya S.',role:'student',assigned:'',ts:'2025-04-10'},
+  {id:'#1041',title:'Wi-Fi down in library basement',cat:'IT & technology',loc:'Central Library, B1',desc:'No connectivity on B1 floor. Both eduroam and guest networks are affected.',status:'In progress',priority:'Medium',reporter:'Rajan M.',role:'faculty',assigned:'IT Helpdesk',ts:'2025-04-08'},
+  {id:'#1039',title:'Broken benches in courtyard',cat:'Infrastructure',loc:'Main Courtyard',desc:'Three wooden benches are cracked and pose a safety risk.',status:'Resolved',priority:'Low',reporter:'Fatima K.',role:'student',assigned:'Facilities',ts:'2025-04-05'},
+  {id:'#1038',title:'Unclean washrooms near Canteen 2',cat:'Cleanliness',loc:'Canteen Block 2',desc:'Washrooms have not been cleaned since Monday morning.',status:'open',priority:'High',reporter:'Arjun T.',role:'staff',assigned:'',ts:'2025-04-12'},
+  {id:'#1036',title:'Projector fault in Seminar Hall A',cat:'IT & technology',loc:'Seminar Hall A',desc:'HDMI port on main projector is damaged, disrupting classes.',status:'In progress',priority:'Medium',reporter:'Dr. Meera N.',role:'faculty',assigned:'AV Team',ts:'2025-04-07'},
+];
+
+let issues = JSON.parse(localStorage.getItem('ut2_issues') || 'null') || seed;
+let notifs = JSON.parse(localStorage.getItem('ut2_notifs') || 'null') || [
+  {msg:'Your complaint #1042 has been assigned to the Facilities team.',read:false,ts:'2025-04-11'},
+  {msg:'Issue #1042 status updated to In progress.',read:false,ts:'2025-04-12'},
+  {msg:'Complaint #1039 has been resolved. Thanks for reporting!',read:true,ts:'2025-04-06'},
+];
+let currentRole = 'student', currentUser = 'Priya S.', prevPage = 'home';
+
+function save() {
+  localStorage.setItem('ut2_issues', JSON.stringify(issues));
+  localStorage.setItem('ut2_notifs', JSON.stringify(notifs));
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 2600);
+}
+
+function statusBadge(s) {
+  if (s === 'open') return `<span class="badge b-open">${s}</span>`;
+  if (s === 'Resolved') return `<span class="badge b-res">${s}</span>`;
+  return `<span class="badge b-prog">${s}</span>`;
+}
+function prioBadge(p) {
+  const cls = p === 'High' ? 'b-high' : p === 'Low' ? 'b-low' : 'b-med';
+  return `<span class="badge ${cls}">${p}</span>`;
+}
+
+/* ── Login with animated button ── */
+function doLogin() {
+  const btn = document.getElementById('login-btn');
+  btn.innerHTML = 'Signing in…';
+  btn.style.background = 'var(--indigo-dark)';
+  btn.disabled = true;
+
+  setTimeout(() => {
+    btn.innerHTML = '✓ &nbsp;Signed in — redirecting';
+    btn.style.background = '#16A34A';
+
+    setTimeout(() => {
+      // Reset button for next time
+      btn.innerHTML = 'Sign in <span class="btn-arrow">→</span>';
+      btn.style.background = '';
+      btn.disabled = false;
+
+      // Do actual login
+      const role = selectedRole;
+      const email = document.getElementById('l-email').value || 'user@university.edu';
+      currentRole = role;
+      const names = {student:'Priya S.',faculty:'Dr. Meera N.',staff:'Rajan M.',admin:'Admin'};
+      currentUser = names[role];
+      document.getElementById('topbar').style.display = 'flex';
+      document.getElementById('tb-role-label').textContent = email;
+      buildNav();
+      if (role === 'admin') showTab('admin'); else showTab('home');
+    }, 800);
+  }, 1200);
+}
+
+function buildNav() {
+  const c = document.getElementById('tb-nav');
+  c.innerHTML = '';
+  const tabs = currentRole === 'admin'
+    ? [['admin','Dashboard'],['notifications','Alerts']]
+    : [['home','Home'],['myissues','My issues'],['report','New complaint'],['notifications','Notifications']];
+  tabs.forEach(([id, label]) => {
+    const b = document.createElement('button');
+    b.className = 'nav-pill'; b.textContent = label;
+    b.setAttribute('data-nt', id);
+    b.onclick = () => showTab(id);
+    c.appendChild(b);
+  });
+  const av = document.createElement('div');
+  av.className = 'avatar';
+  av.textContent = currentUser.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+  c.appendChild(av);
+  const out = document.createElement('button');
+  out.className = 'nav-pill'; out.textContent = 'Sign out';
+  out.onclick = () => {
+    document.getElementById('topbar').style.display = 'none';
+    showPage('login');
+    // Reset role tabs
+    document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+    document.querySelector('.role-tab').classList.add('active');
+    selectedRole = 'student';
+  };
+  c.appendChild(out);
+}
+
+function showTab(id) {
+  document.querySelectorAll('[data-nt]').forEach(b => b.classList.toggle('active', b.getAttribute('data-nt') === id));
+  if (id === 'home') { renderHome(); showPage('home'); }
+  else if (id === 'report') { buildCatChips(); showPage('report'); }
+  else if (id === 'myissues') { renderMy(); showPage('myissues'); }
+  else if (id === 'notifications') { renderNotifs(); showPage('notifications'); }
+  else if (id === 'admin') { renderAdmin('all'); showPage('admin'); }
+}
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+}
+
+function buildCatChips() {
+  const el = document.getElementById('cat-chips');
+  el.innerHTML = cats.map(c => `
+    <div class="cat-chip" onclick="pickCat('${c.label}',this)"
+      style="background:${c.label===selCat?c.color:c.bg};color:${c.label===selCat?'#fff':c.color};border-color:${c.color}">
+      ${c.label}
+    </div>`).join('');
+}
+
+function pickCat(label, el) { selCat = label; buildCatChips(); }
+
+function renderHome() {
+  const mine = issues.filter(i => i.reporter === currentUser);
+  const open = mine.filter(i => i.status === 'open').length;
+  const prog = mine.filter(i => i.status === 'In progress').length;
+  const res  = mine.filter(i => i.status === 'Resolved').length;
+  const unread = notifs.filter(n => !n.read).length;
+  document.getElementById('hero-greeting').textContent = `Hello, ${currentUser.split(' ')[0]}!`;
+  document.getElementById('home-metrics').innerHTML = `
+    <div class="metric-tile mt-purple"><div class="m-label">My open</div><div class="m-val">${open}</div><div class="m-icon">&#9679;</div></div>
+    <div class="metric-tile mt-teal"><div class="m-label">In progress</div><div class="m-val">${prog}</div><div class="m-icon">&#9650;</div></div>
+    <div class="metric-tile mt-coral"><div class="m-label">Resolved</div><div class="m-val">${res}</div><div class="m-icon">&#10003;</div></div>
+    <div class="metric-tile mt-red"><div class="m-label">Unread alerts</div><div class="m-val">${unread}</div><div class="m-icon">&#9679;</div></div>`;
+  const recent = mine.slice(0, 4);
+  document.getElementById('home-recent').innerHTML = recent.length ? recent.map(i => `
+    <div class="issue-row" onclick="viewIssue('${i.id}')">
+      <span class="issue-id">${i.id}</span>
+      <span class="issue-title">${i.title}</span>
+      ${statusBadge(i.status)}
+      ${prioBadge(i.priority)}
+    </div>`).join('') : `<div style="color:var(--color-text-secondary);font-size:14px;padding:6px 0">No complaints yet. Click "+ New complaint" to file one.</div>`;
+}
+
+function renderMy() {
+  const mine = issues.filter(i => i.reporter === currentUser);
+  document.getElementById('my-count').textContent = `${mine.length} complaint${mine.length !== 1 ? 's' : ''}`;
+  document.getElementById('my-list').innerHTML = mine.length ? mine.map(i => `
+    <div class="issue-row" onclick="viewIssue('${i.id}')">
+      <span class="issue-id">${i.id}</span>
+      <span class="issue-title">${i.title}</span>
+      <span class="issue-cat">${i.cat}</span>
+      ${statusBadge(i.status)}
+      ${prioBadge(i.priority)}
+      <span style="font-size:12px;color:var(--color-text-secondary)">${i.ts}</span>
+    </div>`).join('') : `<div style="color:var(--color-text-secondary);font-size:14px;padding:6px 0">No complaints filed yet.</div>`;
+}
+
+function renderNotifs() {
+  document.getElementById('notif-list').innerHTML = notifs.map((n, i) => `
+    <div class="notif-item ${n.read ? '' : 'unread'}" onclick="markRead(${i})" style="cursor:pointer">
+      <div class="notif-dot ${n.read ? 'nd-read' : 'nd-unread'}"></div>
+      <div style="flex:1">
+        <div style="font-size:14px;font-weight:${n.read ? '400' : '500'};color:${n.read ? 'var(--color-text-secondary)' : '#26215C'}">${n.msg}</div>
+        <div style="font-size:12px;color:#888780;margin-top:3px">${n.ts}</div>
+      </div>
+    </div>`).join('');
+}
+function markRead(i) { notifs[i].read = true; save(); renderNotifs(); }
+
+function renderAdmin(filter) {
+  let list = filter === 'all' ? issues : issues.filter(i => i.status === filter);
+  const open = issues.filter(i => i.status === 'open').length;
+  const prog = issues.filter(i => i.status === 'In progress').length;
+  const res  = issues.filter(i => i.status === 'Resolved').length;
+  const high = issues.filter(i => i.priority === 'High').length;
+  document.getElementById('admin-metrics').innerHTML = `
+    <div class="metric-tile mt-purple"><div class="m-label">Open</div><div class="m-val">${open}</div></div>
+    <div class="metric-tile mt-teal"><div class="m-label">In progress</div><div class="m-val">${prog}</div></div>
+    <div class="metric-tile" style="background:#639922"><div class="m-label">Resolved</div><div class="m-val">${res}</div></div>
+    <div class="metric-tile mt-red"><div class="m-label">High priority</div><div class="m-val">${high}</div></div>`;
+  document.getElementById('admin-list').innerHTML = list.length ? list.map(i => `
+    <div class="issue-row" onclick="viewIssue('${i.id}')">
+      <span class="issue-id">${i.id}</span>
+      <span class="issue-title">${i.title}</span>
+      <span class="issue-cat">${i.cat}</span>
+      ${statusBadge(i.status)}
+      ${prioBadge(i.priority)}
+      <span class="issue-assign">${i.assigned || 'Unassigned'}</span>
+      <span style="font-size:12px;color:var(--color-text-secondary)">${i.ts}</span>
+    </div>`).join('') : `<div style="color:var(--color-text-secondary);font-size:14px;padding:6px 0">No issues in this filter.</div>`;
+}
+
+function aFilter(f, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderAdmin(f);
+}
+
+function submitComplaint() {
+  const title = document.getElementById('r-title').value.trim();
+  if (!title) { toast('Please enter an issue title.'); return; }
+  const newId = '#' + (1000 + issues.length + 43);
+  issues.unshift({
+    id: newId, title, cat: selCat,
+    loc: document.getElementById('r-loc').value || 'Not specified',
+    desc: document.getElementById('r-desc').value || '',
+    status: 'open', priority: document.getElementById('r-pri').value,
+    reporter: currentUser, role: currentRole, assigned: '',
+    ts: new Date().toISOString().slice(0, 10)
+  });
+  notifs.unshift({msg:`Your complaint ${newId} — "${title}" — has been submitted and is under review.`,read:false,ts:new Date().toISOString().slice(0,10)});
+  save();
+  document.getElementById('r-title').value = '';
+  document.getElementById('r-desc').value = '';
+  document.getElementById('r-loc').value = '';
+  toast('Complaint submitted! You will be notified when it moves forward.');
+  showTab('myissues');
+}
+
+function viewIssue(id) {
+  prevPage = currentRole === 'admin' ? 'admin' : 'home';
+  const i = issues.find(x => x.id === id);
+  const isAdmin = currentRole === 'admin';
+  const c = cats.find(x => x.label === i.cat) || cats[0];
+  document.getElementById('detail-body').innerHTML = `
+    <div class="card" style="border-top:4px solid ${c.color}">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <span style="font-size:12px;font-weight:500;background:${c.bg};color:${c.color};padding:3px 9px;border-radius:20px">${i.cat}</span>
+            <span style="font-size:12px;color:var(--color-text-secondary)">${i.id} · ${i.ts}</span>
+          </div>
+          <div style="font-size:19px;font-weight:500;color:#26215C">${i.title}</div>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">${statusBadge(i.status)}${prioBadge(i.priority)}</div>
+      </div>
+      <div class="grid2" style="margin-bottom:14px">
+        <div style="background:#EEEDFE;border-radius:10px;padding:12px">
+          <div style="font-size:11px;font-weight:500;color:var(--p);margin-bottom:3px;letter-spacing:.5px">LOCATION</div>
+          <div style="font-size:14px;color:#26215C">${i.loc}</div>
+        </div>
+        <div style="background:#E1F5EE;border-radius:10px;padding:12px">
+          <div style="font-size:11px;font-weight:500;color:var(--t);margin-bottom:3px;letter-spacing:.5px">REPORTED BY</div>
+          <div style="font-size:14px;color:#085041">${i.reporter} <span style="font-size:12px;color:#1D9E75">(${i.role})</span></div>
+        </div>
+      </div>
+      <div style="font-size:13px;font-weight:500;color:#534AB7;margin-bottom:5px">Description</div>
+      <div style="font-size:14px;line-height:1.65;color:var(--color-text-primary);margin-bottom:${isAdmin?'18px':'0'}">${i.desc}</div>
+      ${isAdmin ? `
+      <div class="pf-divider"></div>
+      <div style="font-size:13px;font-weight:500;color:#534AB7;margin-bottom:12px">Admin controls</div>
+      <div class="grid2" style="margin-bottom:14px">
+        <div class="pf-field" style="margin-bottom:0">
+          <label>Status</label>
+          <select id="d-status">
+            <option ${i.status==='open'?'selected':''}>open</option>
+            <option ${i.status==='In progress'?'selected':''}>In progress</option>
+            <option ${i.status==='Resolved'?'selected':''}>Resolved</option>
+          </select>
+        </div>
+        <div class="pf-field" style="margin-bottom:0">
+          <label>Priority</label>
+          <select id="d-prio">
+            <option ${i.priority==='Low'?'selected':''}>Low</option>
+            <option ${i.priority==='Medium'?'selected':''}>Medium</option>
+            <option ${i.priority==='High'?'selected':''}>High</option>
+          </select>
+        </div>
+      </div>
+      <div class="pf-field">
+        <label>Assign to team</label>
+        <select id="d-assign">
+          <option value="">Unassigned</option>
+          <option ${i.assigned==='Facilities'?'selected':''}>Facilities</option>
+          <option ${i.assigned==='IT Helpdesk'?'selected':''}>IT Helpdesk</option>
+          <option ${i.assigned==='AV Team'?'selected':''}>AV Team</option>
+          <option ${i.assigned==='Hostel Office'?'selected':''}>Hostel Office</option>
+          <option ${i.assigned==='Security'?'selected':''}>Security</option>
+          <option ${i.assigned==='Housekeeping'?'selected':''}>Housekeeping</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:6px">
+        <button class="btn primary" onclick="saveIssue('${i.id}')">Save &amp; notify reporter</button>
+      </div>` : ''}
+    </div>`;
+  showPage('detail');
+}
+
+function saveIssue(id) {
+  const i = issues.find(x => x.id === id);
+  const ns = document.getElementById('d-status').value;
+  const np = document.getElementById('d-prio').value;
+  const na = document.getElementById('d-assign').value;
+  const changes = [];
+  if (ns !== i.status) { changes.push(`status updated to "${ns}"`); i.status = ns; }
+  if (np !== i.priority) { changes.push(`priority set to ${np}`); i.priority = np; }
+  if (na !== i.assigned) { changes.push(`assigned to ${na || 'none'}`); i.assigned = na; }
+  if (changes.length) {
+    notifs.unshift({msg:`Issue ${id}: ${changes.join(', ')}.`,read:false,ts:new Date().toISOString().slice(0,10)});
+    save(); toast('Saved! Reporter has been notified.');
+  } else toast('No changes detected.');
+}
+
+function goBack() {
+  if (prevPage === 'admin') { renderAdmin('all'); showPage('admin'); }
+  else { renderHome(); showPage('home'); }
+}
+</script>
+</body>
+</html>
