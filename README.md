@@ -8,13 +8,13 @@ Title of your repository shall be : team-(your team name)
 
 After forking, fill in your team details below in your fork's README
 
-- **Team Name:Mahreen&sumaiya
-- **Team Lead:Mahreen
-- **Team Members:1
-  - Member 1:sumaiya
-  - Member 2:
-  - Member 3:
-  - Member 4:
+- **Team Name:Hack_Masters
+- **Team Lead:K Aneesh Raj
+- **Team Members:4
+  - Member 1:K Aneesh Raj
+  - Member 2:Rithwik CH
+  - Member 3:Shyam Kumar
+  - Member 4:Mohamed Omer
 
 ---
 
@@ -46,7 +46,17 @@ git push origin main
 
 ## Problem Statement
 
-[Write your problem statement here]
+Smart Campus Issue Reporting and Management System
+Problem Statement:
+Campus infrastructure complaints travel through WhatsApp messages and phone calls that go
+nowhere. The same issues get reported repeatedly, nothing is tracked, and reporters have no idea
+whether anything is actually being done.
+Description:
+Build a platform where students, faculty, and staff can log complaints with a category, description,
+and location. Admins can assign tasks, set priority levels, and update status in real time. Reporters
+get notified when their issue moves forward. A basic dashboard tracks open versus resolved issues
+and surfaces recurring problems. Clean reporting flow, working admin view, reliable notifications.
+That is a complete build for 48 hours.
 
 ---
 
